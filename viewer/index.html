@@ -1,0 +1,611 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI in a PNG: Scheduling</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --primary: #6366f1;
+            --primary-active: #4f46e5;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at 70% 20%, #eff6ff 0%, transparent 50%),
+                radial-gradient(circle at 30% 80%, #f5f3ff 0%, transparent 50%);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.04em;
+            color: #0f172a;
+        }
+
+        .sub {
+            color: var(--text-muted);
+            margin: 0 0 48px 0;
+            font-size: 1.125rem;
+            font-weight: 450;
+        }
+
+        #drop {
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            padding: 60px 40px;
+            border-radius: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            position: relative;
+        }
+
+        #drop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .drop-icon {
+            width: 64px;
+            height: 64px;
+            background: white;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 8px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 28px;
+            border-radius: 16px;
+            border: none;
+            background: #1e293b;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #0f172a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .link-btn {
+            background: transparent;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .link-btn:hover {
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--text);
+            box-shadow: none;
+            transform: none;
+        }
+
+        footer {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dot {
+            color: #cbd5e1;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 99px;
+            margin: 4px 4px 0 0;
+            font-size: 0.8rem;
+            font-weight: 650;
+            text-align: center;
+        }
+
+        .ok {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .warn {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 32px;
+            text-align: left;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s;
+        }
+
+        .card h3 {
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .card button {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .card button:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            margin: 0;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        #status {
+            margin: 24px 0;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        #chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 32px;
+            max-width: 540px;
+            width: 100%;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: left;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal h2 {
+            margin: 0 0 24px 0;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-content {
+            font-size: 1rem;
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .tech-item h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+            color: #0f172a;
+        }
+
+        .tech-item p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        #closeModal {
+            margin-top: 40px;
+            width: 100%;
+            background: #0f172a;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            #drop {
+                padding: 40px 24px;
+                border-radius: 24px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AI model in a PNG</h1>
+        <p class="sub">Extracts model and code from image pixels and run locally in your browser</p>
+
+        <div id="drop">
+            <div class="drop-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+            </div>
+            <div style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-top: 16px;">Drop or load sample
+                PNG</div>
+            <p class="muted" style="margin-top: 4px; font-size: 0.85rem;">Private by design. Logic stays in your
+                browser.</p>
+
+            <input type="file" id="fileIn" style="display:none" accept="image/png" />
+
+            <div class="row" style="justify-content:center; margin-top:24px;">
+                <button id="loadSample">Load sample PNG</button>
+            </div>
+
+            <div id="status"></div>
+            <div id="appMount"></div>
+        </div>
+
+        <footer>
+            <button id="techDetailsBtn" class="link-btn">Technical Details</button>
+            <span class="dot">·</span>
+            <button id="viewPayload" disabled class="link-btn">View Raw Payload</button>
+            <span class="dot">·</span>
+            <a href="ai_payload.png" download class="link-btn" style="text-decoration: none;">Download sample PNG</a>
+        </footer>
+    </div>
+
+    <div id="modalBackdrop" class="modal-backdrop">
+        <div class="modal">
+            <h2>Technical Details</h2>
+            <div class="modal-content">
+                <p>Demonstrates <strong>local-first AI</strong> by embedding a functional machine learning
+                    model and application logic directly into a standard PNG image.</p>
+
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <h3>Steganography</h3>
+                        <p>Data is stored in the <strong>RGB channels</strong> of the image pixels. Alpha is kept at 255
+                            to maintain visual consistency. The viewer uses a custom JS routine to reconstruct the
+                            binary blob from the Canvas <code>ImageData</code> buffer.</p>
+                    </div>
+                    <div class="tech-item">
+                        <h3>Machine Learning</h3>
+                        <p>The intent classifier is a <strong>Logistic Regression</strong> model trained on email
+                            snippets. It doesn't use heavy libraries; it's implemented in pure Python (training) and
+                            pure JavaScript (inference).</p>
+                    </div>
+                    <div class="tech-item">
+                        <h3>Quantization</h3>
+                        <p>Weights are quantized to <strong>int8</strong> to reduce the payload size. The total "brain"
+                            (model + code + UI) is only <strong>3.7 KB</strong>, allowing it to fit into a tiny
+                            ~100x100px area of the image.</p>
+                    </div>
+                </div>
+            </div>
+            <button id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { extractPayloadFromPngFile } from './stegano.js';
+
+        const modal = document.getElementById("modalBackdrop");
+        document.getElementById("techDetailsBtn").onclick = () => modal.style.display = "flex";
+        document.getElementById("closeModal").onclick = () => modal.style.display = "none";
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+        function mountApp(payload) {
+            const mount = document.getElementById("appMount");
+            mount.innerHTML = "";
+
+            const shell = document.createElement("div");
+            shell.className = "app-shell";
+            shell.innerHTML = `
+          <div style="height:1px; background:#e2e8f0; margin:40px 0;"></div>
+
+          <div class="row" style="justify-content:space-between; text-align:left;">
+            <div>
+              <div class="muted"><strong>Loaded:</strong> <span id="payloadName"></span></div>
+              <div class="muted">Verified: magic + CRC. Inference runs in-browser.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:32px; text-align:left;">
+            <div class="muted" style="margin-bottom:12px; font-weight:600;">Paste an email asking to schedule a meeting:</div>
+            <textarea id="emailIn" placeholder="Hi Pawel, can we chat this week? I am free Tue afternoon."></textarea>
+            <div class="row" style="margin-top:16px;">
+              <button id="draftBtn">Draft replies</button>
+              <span class="muted" style="font-size:0.8rem">Tip: mention a day or a time to see extraction in action.</span>
+            </div>
+          </div>
+
+          <div style="margin-top:24px">
+            <div id="chips"></div>
+          </div>
+
+          <div class="grid" id="cards"></div>
+        `;
+            mount.appendChild(shell);
+
+            document.getElementById("payloadName").textContent = payload.meta?.name || "payload";
+
+            const api = {
+                payload,
+                setChips: (items) => {
+                    const el = document.getElementById("chips");
+                    el.innerHTML = "";
+                    for (const it of items) {
+                        const d = document.createElement("span");
+                        d.className = "pill " + (it.level === "warn" ? "warn" : "ok");
+                        d.textContent = it.text;
+                        el.appendChild(d);
+                    }
+                },
+                setReplies: (replies) => {
+                    const cards = document.getElementById("cards");
+                    cards.innerHTML = "";
+                    for (const r of replies) {
+                        const card = document.createElement("div");
+                        card.className = "card";
+                        const id = "copy_" + Math.random().toString(16).slice(2);
+                        card.innerHTML = `
+                <h3>
+                  <span>${r.title}</span>
+                  <button id="${id}">Copy</button>
+                </h3>
+                <pre>${escapeHtml(r.text)}</pre>
+              `;
+                        cards.appendChild(card);
+                        document.getElementById(id).onclick = async () => {
+                            await navigator.clipboard.writeText(r.text);
+                            document.getElementById(id).textContent = "Copied";
+                            setTimeout(() => document.getElementById(id).textContent = "Copy", 1000);
+                        };
+                    }
+                }
+            };
+
+            if (payload.ui_html) {
+                const extra = document.createElement("div");
+                extra.innerHTML = payload.ui_html;
+                mount.insertBefore(extra, mount.firstChild);
+            }
+
+            const fn = new Function("api", payload.app_js);
+            fn(api);
+
+            document.getElementById("draftBtn").onclick = () => {
+                const email = document.getElementById("emailIn").value || "";
+                if (window.__AIPNG_DRAFT) window.__AIPNG_DRAFT(email);
+            };
+        }
+
+        function escapeHtml(s) {
+            return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        }
+
+        const drop = document.getElementById("drop");
+        const fileIn = document.getElementById("fileIn");
+
+        drop.onclick = (e) => {
+            const forbidden = ['BUTTON', 'A', 'TEXTAREA', 'INPUT'];
+            if (!forbidden.includes(e.target.tagName)) fileIn.click();
+        };
+
+        fileIn.onchange = (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        };
+
+        drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.style.opacity = 0.8; });
+        drop.addEventListener("dragleave", () => { drop.style.opacity = 1; });
+
+        let lastPayload = null;
+
+        async function handleFile(file) {
+            const status = document.getElementById("status");
+            try {
+                status.textContent = "Reading PNG...";
+                const payload = await extractPayloadFromPngFile(file);
+                lastPayload = payload;
+                document.getElementById("viewPayload").disabled = false;
+                status.textContent = "Loaded and verified. Paste an email below.";
+                mountApp(payload);
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+            }
+        }
+
+        drop.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            drop.style.opacity = 1;
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+
+
+        document.getElementById("loadSample").onclick = async () => {
+            const status = document.getElementById("status");
+            try {
+                status.textContent = "Downloading sample PNG...";
+                const fetchPath = 'ai_payload.png';
+                const res = await fetch(fetchPath).catch(err => {
+                    throw new Error(`Fetch failed: ${err.message}. Check if server is running on port 8000.`);
+                });
+                if (!res.ok) throw new Error(`Could not fetch sample PNG: ${res.status} ${res.statusText}`);
+                const blob = await res.blob();
+                const file = new File([blob], "ai_payload.png", { type: "image/png" });
+
+                const payload = await extractPayloadFromPngFile(file);
+                lastPayload = payload;
+                document.getElementById("viewPayload").disabled = false;
+                status.textContent = "Loaded and verified. Paste an email below.";
+                mountApp(payload);
+            } catch (err) {
+                console.error("Caught error in loadSample:", err);
+                status.textContent = "Error: " + err.message;
+            }
+        };
+
+        document.getElementById("viewPayload").onclick = () => {
+            if (!lastPayload) return;
+            const w = window.open("", "_blank");
+            w.document.write("<pre>" + escapeHtml(JSON.stringify(lastPayload, null, 2)) + "</pre>");
+            w.document.close();
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+{"text":"can we schedule a call next week", "label":"scheduling"}
+{"text":"are you free tuesday afternoon for a quick chat", "label":"scheduling"}
+{"text":"please send a calendar invite for thursday", "label":"scheduling"}
+{"text":"what time works for you this week", "label":"scheduling"}
+{"text":"can we meet for 30 minutes tomorrow", "label":"scheduling"}
+{"text":"hi i would like to hop on a call on wednesday", "label":"scheduling"}
+{"text":"does 2pm on friday work for a sync", "label":"scheduling"}
+{"text":"let's catch up on zoom tomorrow morning", "label":"scheduling"}
+{"text":"would you be open to a 15 min meeting on monday", "label":"scheduling"}
+{"text":"i have some availability next tuesday if that works", "label":"scheduling"}
+{"text":"can we talk about the project on a call", "label":"scheduling"}
+{"text":"looking forward to our meeting later today", "label":"scheduling"}
+{"text":"are you available for a brief chat tomorrow", "label":"scheduling"}
+{"text":"let's schedule something for early next week", "label":"scheduling"}
+{"text":"could we jump on a quick call to discuss the proposal", "label":"scheduling"}
+{"text":"how much does this cost", "label":"other"}
+{"text":"we need pricing and a quote", "label":"other"}
+{"text":"the app is not working, getting an error", "label":"other"}
+{"text":"following up on the issue from last week", "label":"other"}
+{"text":"can you share an update on the proposal", "label":"other"}
+{"text":"i need help with my account", "label":"other"}
+{"text":"where can i find the documentation for this", "label":"other"}
+{"text":"is there a discount available for annual billing", "label":"other"}
+{"text":"the feature is broken in the latest release", "label":"other"}
+{"text":"thanks for the information you sent over", "label":"other"}
+{"text":"i will review this and get back to you soon", "label":"other"}
+{"text":"can you send me the invoice for last month", "label":"other"}
+{"text":"i would like to cancel my subscription", "label":"other"}
+{"text":"your team was very helpful today, thank you", "label":"other"}
+{"text":"could you provide more details on the roadmap", "label":"other"}
