@@ -1,31 +1,31 @@
 # AI in a PNG: Intent Classifier
 
-A functional, private-by-design ML model and application logic—all embedded within the pixels of a single PNG image.
+A functional tiny (3089 bytes) ML model and application embedded within the pixels of a single PNG image
 
 ![AI in a PNG](viewer/ai_payload.png)
-*(The image above contains the entire brain and heart of this application)*
+*(The image above contains the entire brain and heart of this app)*
 
-This project demonstrates **local-first AI**. In a world of cloud-heavy LLMs, we explore the opposite: how much intelligence can we pack into a tiny, self-contained binary container that runs entirely in the user's browser?
+In a world of cloud-heavy LLMs, we explore the opposite. How much intelligence can we pack into a tiny, self-contained binary containers that runs entirely in the user's browser?
 
-- **Zero Trust**: No data ever leaves the user's machine
+- **Zero Trust**: No data leaves the user's machine
 - **Zero Server**: No API calls, no Python backend, no GPU clusters needed for inference
-- **Portability**: The entire app (Model + Logic + UI) is just a single ~3.5 KB payload hidden inside an image
+- **Portability**: The entire app (Model + Logic + UI) is just a single ~3 KB payload hidden inside an image
 
 ## How it Works
 
 ### 1. Steganography
-The data is stored in the **RGB channels** of the image pixels. We keep the Alpha channel at 255 to ensure visual consistency. A custom JavaScript routine (`stegano.js`) reconstructs the binary blob from the browser's `ImageData` buffer.
+The data is stored in the **RGB channels** of the image pixels. We keep the Alpha channel at 255 to ensure visual consistency. A custom JavaScript routine (`stegano.js`) reconstructs the binary blob from the browser's `ImageData` buffer
 
 ### 2. Machine Learning
-We use a **Logistic Regression** model trained on email snippets to classify user intent, e.g., "scheduling" a meeting)
+We use a **Logistic Regression** model trained on a small list of email snippets to classify user intent, e.g., "scheduling" a meeting)
 - **Quantization**: Weights are quantized to `int8` to reduce the footprint
 - **Inference**: High-speed inference happens in pure JavaScript using a simple Bag-of-Words (BoW) approach
 
 ### 3. Distribution
 Because the paths are flattened, the viewer requires only three files to function:
-- `index.html`: The glassmorphic UI frame.
-- `stegano.js`: The "Key" that unlocks and runs the PNG payload.
-- `ai_payload.png`: The "Brain" (Model + App Logic + UI templates).
+- `index.html`: The glassmorphic UI frame
+- `stegano.js`: The "Key" that unlocks and runs the PNG payload
+- `ai_payload.png`: The "Brain" (Model + App logic + UI templates)
 
 ## Getting Started
 
@@ -39,11 +39,11 @@ Because the paths are flattened, the viewer requires only three files to functio
    ```bash
    python3 -m http.server 8000
    ```
-3. Open `http://localhost:8000/viewer/` in your browser.
+3. Open `http://localhost:8000/viewer/` in your browser
 
 ### Development
 
-1. **Train the model**: Update `data/train.jsonl` and run the trainer:
+1. **Train(re-train) the model**: Update `data/train.jsonl` and run the trainer:
    ```bash
    python3 train/train_intent.py
    ```
@@ -53,10 +53,10 @@ Because the paths are flattened, the viewer requires only three files to functio
    ```bash
    python3 pack/pack.py
    ```
-   *This generates the fresh `viewer/ai_payload.png`.*
+   *This generates the fresh `viewer/ai_payload.png`*
 
 ## Deployment
-You can host this anywhere (GitHub Pages, Gist, etc.). Just copy the three files from the `viewer/` directory.
+You can host this anywhere.
 
 ---
 *Powered by steganography*
