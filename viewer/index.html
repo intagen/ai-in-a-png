@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AI in a PNG: Scheduling</title>
+    <title>AI in a PNG: Intent Classifier</title>
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.7);
@@ -371,8 +371,8 @@
 
 <body>
     <div class="container">
-        <h1>AI model in a PNG</h1>
-        <p class="sub">Extracts model and code from image pixels and run locally in your browser</p>
+        <h1>AI in a PNG</h1>
+        <p class="sub">A 3 KB AI email scheduling assistant hidden inside PNG image pixels</p>
 
         <div id="drop">
             <div class="drop-icon">
@@ -385,9 +385,9 @@
             </div>
             <div style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-top: 16px;">Drop or load sample
                 PNG</div>
-            <p class="muted" style="margin-top: 4px; font-size: 0.85rem;">Private by design. Logic stays in your
-                browser.</p>
+            <p class="muted" style="margin-top: 4px; font-size: 0.85rem;">Inference logic stays in your browser</p>
 
+            <p>Or</p>
             <input type="file" id="fileIn" style="display:none" accept="image/png" />
 
             <div class="row" style="justify-content:center; margin-top:24px;">
@@ -404,6 +404,26 @@
             <button id="viewPayload" disabled class="link-btn">View Raw Payload</button>
             <span class="dot">·</span>
             <a href="ai_payload.png" download class="link-btn" style="text-decoration: none;">Download sample PNG</a>
+            <span class="dot">·</span>
+            <a href="https://github.com/intagen/ai-in-a-png" target="_blank" class="link-btn"
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <svg height="14" viewBox="0 0 16 16" width="14" style="fill: currentColor; opacity: 0.7;">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+                GitHub
+            </a>
+            <span class="dot">·</span>
+            <a href="https://www.linkedin.com/in/pjab/" target="_blank" class="link-btn"
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <svg height="14" viewBox="0 0 24 24" width="14" style="fill: currentColor; opacity: 0.7;">
+                    <path
+                        d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z">
+                    </path>
+                </svg>
+                LinkedIn
+            </a>
         </footer>
     </div>
 
@@ -411,8 +431,8 @@
         <div class="modal">
             <h2>Technical Details</h2>
             <div class="modal-content">
-                <p>Demonstrates <strong>local-first AI</strong> by embedding a functional machine learning
-                    model and application logic directly into a standard PNG image.</p>
+                <p>Demonstrates how to embedd a functional machine learning model and application logic directly into a
+                    standard PNG image.</p>
 
                 <div class="tech-grid">
                     <div class="tech-item">
@@ -430,7 +450,7 @@
                     <div class="tech-item">
                         <h3>Quantization</h3>
                         <p>Weights are quantized to <strong>int8</strong> to reduce the payload size. The total "brain"
-                            (model + code + UI) is only <strong>3.7 KB</strong>, allowing it to fit into a tiny
+                            (model + code + UI) is only <strong>3 KB</strong>, allowing it to fit into a tiny
                             ~100x100px area of the image.</p>
                     </div>
                 </div>
@@ -580,7 +600,7 @@
             const status = document.getElementById("status");
             try {
                 status.textContent = "Downloading sample PNG...";
-                const fetchPath = 'ai_payload.png';
+                const fetchPath = 'ai_payload.png?v=' + Date.now();
                 const res = await fetch(fetchPath).catch(err => {
                     throw new Error(`Fetch failed: ${err.message}. Check if server is running on port 8000.`);
                 });

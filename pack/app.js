@@ -162,5 +162,5 @@ ${signName}`;
     api.setReplies(composeReplies(pred.label, pred.pScheduling, slots, model));
   };
 
-  api.setChips([{ level: "ok", text: "PNG loaded. This one includes a trained ML intent model." }]);
+  api.setChips([{ level: "ok", text: "PNG loaded. Includes a trained ML intent model" }]);
 })();
